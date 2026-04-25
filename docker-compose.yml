@@ -1,0 +1,17 @@
+services:
+  api-plantas:
+    image: node:20-slim
+    container_name: fastify_plant_api
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "80:3000"
+    env_file:
+      - .env
+    restart: always
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    # Instalamos dependencias y ejecutamos el script de inicio en una sola línea
+    command: sh -c "npm install && node src/index.js"

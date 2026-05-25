@@ -1,112 +1,129 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+
+// Base de datos de plantas (puedes sincronizarla a futuro con tu historial de capturas)
+const BOTANICAL_OPTIONS = ['Romero', 'Menta', 'Manzanilla', 'Eucalipto'];
 
 export default function TabTwoScreen() {
+  const [selectedPlants, setSelectedPlants] = useState<string[]>([]);
+  const [recipe, setRecipe] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Alternar selección de plantas en el arreglo
+  const handleTogglePlant = (plant: string) => {
+    if (selectedPlants.includes(plant)) {
+      setSelectedPlants(selectedPlants.filter((p) => p !== plant));
+    } else {
+      setSelectedPlants([...selectedPlants, plant]);
+    }
+  };
+
+  // Consumir el endpoint de Gemini en el backend Fastify
+  const handleFetchRecipe = async () => {
+    if (selectedPlants.length === 0) {
+      Alert.alert('Atención', 'Selecciona al menos una planta de la lista.');
+      return;
+    }
+
+    setLoading(true);
+    setRecipe(null);
+
+    try {
+      // Reemplaza por la IP local de tu máquina o tu URL de producción en Render
+      const response = await fetch('http://10.0.2.2:3000/generate-recipes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plants: selectedPlants }),
+      });
+
+      if (!response.ok) throw new Error('HTTP Error');
+
+      const data = await response.json();
+      setRecipe(data.recipe);
+    } catch (error) {
+      Alert.alert('Error', 'No se logró conectar con el motor de IA.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerBackgroundColor={{ light: '#A7F3D0', dark: '#064E3B' }}
       headerImage={
         <IconSymbol
           size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
+          color="#059669"
+          name="paperplane.fill"
           style={styles.headerImage}
         />
       }>
+      
       <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
+        <ThemedText type="title">Generador de Recetas IA</ThemedText>
       </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
+
+      <ThemedText>
+        Agrupa las plantas de tu bitácora para procesar una receta médica o gastronómica con Gemini:
+      </ThemedText>
+
+      {/* Selector de Chips / Checkbox */}
+      <View style={styles.chipsContainer}>
+        {BOTANICAL_OPTIONS.map((plant) => {
+          const isSelected = selectedPlants.includes(plant);
+          return (
+            <TouchableOpacity
+              key={plant}
+              style={[styles.chip, isSelected && styles.chipActive]}
+              onPress={() => handleTogglePlant(plant)}
+            >
+              <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
+                {plant} {isSelected ? '🌱 ✅' : '➕'}
+              </Text>
+            </TouchableOpacity>
+          );
         })}
-      </Collapsible>
+      </View>
+
+      {/* Botón de envío */}
+      <TouchableOpacity 
+        style={styles.actionButton} 
+        onPress={handleFetchRecipe}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#000" />
+        ) : (
+          <Text style={styles.actionButtonText}>Generar Receta con Gemini</Text>
+        )}
+      </TouchableOpacity>
+
+      {/* Visor de resultados */}
+      {recipe && (
+        <ScrollView style={styles.recipeContainer}>
+          <Text style={styles.recipeText}>{recipe}</Text>
+        </ScrollView>
+      )}
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+  headerImage: { color: '#808080', bottom: -90, left: -35, position: 'absolute' },
+  titleContainer: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+  chipsContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginVertical: 15 },
+  chip: { padding: 12, borderRadius: 20, backgroundColor: '#E5E7EB', borderWidth: 1, borderColor: '#D1D5DB' },
+  chipActive: { backgroundColor: '#A7F3D0', borderColor: '#10B981' },
+  chipText: { color: '#374151', fontWeight: '600' },
+  chipTextActive: { color: '#065F46', fontWeight: 'bold' },
+  actionButton: { backgroundColor: '#4ade80', padding: 15, borderRadius: 12, marginTop: 10 },
+  actionButtonText: { color: '#000', fontWeight: 'bold', textAlign: 'center' },
+  recipeContainer: { marginTop: 25, padding: 15, backgroundColor: '#FFF', borderRadius: 12, borderWidth: 1, borderColor: '#E5E7EB' },
+  recipeText: { fontSize: 14, color: '#1F2937', lineHeight: 22 }
 });

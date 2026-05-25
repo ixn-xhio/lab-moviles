@@ -3,14 +3,12 @@ import { render, fireEvent, waitFor, screen } from '@testing-library/react-nativ
 import CameraScreen from '../app/(tabs)/index';
 import { Alert } from 'react-native';
 
-// 1. ESPREAR Y SEPARAR LOS MOCKS DE HARDWARE Y ALERTAS
 jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
 let mockIsReady = true;
 const mockAskForPermission = jest.fn();
 const mockSetLastPhoto = jest.fn();
 
-// Mock reactivo del ciclo de vida del hook useCamera
 jest.mock('@/hooks/useCamera', () => {
   const React = require('react');
   return {
@@ -36,7 +34,6 @@ jest.mock('@/hooks/useCamera', () => {
   };
 });
 
-// Mock del visor de la cámara de Expo
 jest.mock('expo-camera', () => {
   const React = require('react');
   const { View } = require('react-native');
@@ -45,7 +42,6 @@ jest.mock('expo-camera', () => {
   };
 });
 
-// Mock del procesador de bitmaps de imágenes
 jest.mock('expo-image-manipulator', () => ({
   manipulateAsync: jest.fn().mockResolvedValue({
     uri: 'ph://compressed-uri.jpg',

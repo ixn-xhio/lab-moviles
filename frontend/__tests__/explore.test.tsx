@@ -2,7 +2,6 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import TabTwoScreen from '../app/(tabs)/explore';
 
-// 1. CORRECCIÓN DEFINITIVA DE MOCKS CON INTEROP ESM
 jest.mock('@/components/parallax-scroll-view', () => ({
   __esModule: true,
   default: ({ children }: any) => children,

@@ -165,7 +165,8 @@ export default function CameraScreen() {
       ) : (
         <CameraView ref={cameraRef} style={styles.full}>
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.snap} onPress={handleIdentify} />
+            {/* AGREGAR testID AQUÍ */}
+            <TouchableOpacity testID="snap-button" style={styles.snap} onPress={handleIdentify} />
           </View>
         </CameraView>
       )}

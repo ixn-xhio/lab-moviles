@@ -1,4 +1,3 @@
-// CameraScreen.tsx
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -14,13 +13,12 @@ import { CameraView } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { useCamera } from '@/hooks/useCamera';
 
-// Definimos la interfaz basada en tu nuevo backend RAG
 interface AIResult {
   description: string;
   classification: string;
   danger_level: string;
   confidence: number;
-  similar_findings: string[]; // Los strings que vienen del RAG
+  similar_findings: string[];
 }
 
 export default function CameraScreen() {
@@ -50,7 +48,6 @@ export default function CameraScreen() {
 
       setLastPhoto(photo);
 
-      // Reducción de imagen para optimizar el envío
       const manipulated = await ImageManipulator.manipulateAsync(
         photo.uri,
         [{ resize: { width: 512 } }],
@@ -63,14 +60,13 @@ export default function CameraScreen() {
 
       const base64 = manipulated.base64 || '';
 
-      // NOTA: Ajusta esta URL a tu endpoint de clasificación
       const response = await fetch('http://desynth.dev/classification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          photo_url: `data:image/jpeg;base64,${base64}` // Enviando base64 como URL temporal
+          photo_url: `data:image/jpeg;base64,${base64}` 
         })
       });
 
@@ -165,7 +161,6 @@ export default function CameraScreen() {
       ) : (
         <CameraView ref={cameraRef} style={styles.full}>
           <View style={styles.footer}>
-            {/* AGREGAR testID AQUÍ */}
             <TouchableOpacity testID="snap-button" style={styles.snap} onPress={handleIdentify} />
           </View>
         </CameraView>
@@ -216,7 +211,6 @@ const styles = StyleSheet.create({
   label: { fontWeight: 'bold', color: '#666' },
   value: { fontWeight: 'bold' },
 
-  // Estilos para el RAG
   ragSection: {
     marginTop: 15,
     paddingTop: 15,

@@ -5,7 +5,6 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
-// Base de datos de plantas (puedes sincronizarla a futuro con tu historial de capturas)
 const BOTANICAL_OPTIONS = ['Romero', 'Menta', 'Manzanilla', 'Eucalipto'];
 
 export default function TabTwoScreen() {
@@ -13,7 +12,6 @@ export default function TabTwoScreen() {
   const [recipe, setRecipe] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Alternar selección de plantas en el arreglo
   const handleTogglePlant = (plant: string) => {
     if (selectedPlants.includes(plant)) {
       setSelectedPlants(selectedPlants.filter((p) => p !== plant));
@@ -22,7 +20,6 @@ export default function TabTwoScreen() {
     }
   };
 
-  // Consumir el endpoint de Gemini en el backend Fastify
   const handleFetchRecipe = async () => {
     if (selectedPlants.length === 0) {
       Alert.alert('Atención', 'Selecciona al menos una planta de la lista.');
@@ -33,7 +30,6 @@ export default function TabTwoScreen() {
     setRecipe(null);
 
     try {
-      // Reemplaza por la IP local de tu máquina o tu URL de producción en Render
       const response = await fetch('http://10.0.2.2:3000/generate-recipes', {
         method: 'POST',
         headers: {
@@ -91,7 +87,6 @@ export default function TabTwoScreen() {
         })}
       </View>
 
-      {/* Botón de envío */}
       <TouchableOpacity 
         style={styles.actionButton} 
         onPress={handleFetchRecipe}
@@ -104,7 +99,6 @@ export default function TabTwoScreen() {
         )}
       </TouchableOpacity>
 
-      {/* Visor de resultados */}
       {recipe && (
         <ScrollView style={styles.recipeContainer}>
           <Text style={styles.recipeText}>{recipe}</Text>

@@ -1,10 +1,9 @@
 {
   "android": {
-        "package": "com.plant.app"
+    "package": "com.plant.app"
   },
-
   "ios": {
-        "bundleIdentifier": "com.plant.app"
+    "bundleIdentifier": "com.plant.app"
   },
   "expo": {
     "name": "PlantCareApp",
@@ -61,9 +60,13 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
           "isAccessMediaLocationEnabled": true,
-          "granularPermissions": ["audio", "photo"]
+          "granularPermissions": [
+            "audio",
+            "photo"
+          ]
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

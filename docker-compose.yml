@@ -1,17 +1,41 @@
+version: '3.8'
+
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_plant_db
+    restart: always
+    environment:
+      - POSTGRES_USER=botanico_user
+      - POSTGRES_PASSWORD=botanico_password_secure
+      - POSTGRES_DB=bitacora_botanica
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Sigue en la raíz, se monta igual
+
   api-plantas:
     image: node:20-slim
     container_name: fastify_plant_api
     working_dir: /app
     volumes:
-      - .:/app
+      - ./api:/app # 🟢 ¡La clave! Mapea la subcarpeta api a la raíz /app del contenedor
     ports:
       - "80:3000"
     env_file:
-      - .env
+      - .env # Sigue leyendo el .env de la raíz sin problemas
     restart: always
     environment:
       - PORT=3000
       - NODE_ENV=production
-    # Instalamos dependencias y ejecutamos el script de inicio en una sola línea
+      - DATABASE_URL=postgres://botanico_user:botanico_password_secure@db:5432/bitacora_botanica
+      - PLANTID_API_KEY=${PLANTID_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - db
+    # Al estar parados en /app (que ahora contiene el interior de ./api), esto funciona impecable:
     command: sh -c "npm install && node src/index.js"
+
+volumes:
+  postgres_data:

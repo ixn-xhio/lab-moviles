@@ -39,3 +39,4 @@ CREATE TABLE IF NOT EXISTS recipe_plants (
     plant_id INT REFERENCES identified_plants(id) ON DELETE CASCADE,
     PRIMARY KEY (recipe_id, plant_id)
 );
+

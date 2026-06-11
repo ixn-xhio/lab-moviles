@@ -29,8 +29,8 @@ export default function TabTwoScreen() {
   const loadData = async () => {
     try {
       const [plantsRes, recipesRes] = await Promise.all([
-        fetch('http://74.220.31.85/plants-detailed'),
-        fetch('http://74.220.31.85/recipes')
+        fetch('http://74.220.28.80/plants-detailed'),
+        fetch('http://74.220.28.80/recipes')
       ]);
 
       if (!plantsRes.ok || !recipesRes.ok) throw new Error();
@@ -70,14 +70,14 @@ export default function TabTwoScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const response = await fetch(`http://74.220.31.85/plants/${id}`, { method: 'DELETE' });
+              const response = await fetch(`http://74.220.28.80/plants/${id}`, { method: 'DELETE' });
               if (!response.ok) throw new Error();
               
               Alert.alert('Éxito', 'Registros relacionales purgados.');
               setPlants(plants.filter(p => p.id !== id));
               setSelectedPlants(selectedPlants.filter(pId => pId !== id));
               // Volver a consultar recetas para actualizar el feed reactivamente sin la planta eliminada
-              const recipesRes = await fetch('http://74.220.31.85/recipes');
+              const recipesRes = await fetch('http://74.220.28.80/recipes');
               setPastRecipes(await recipesRes.json());
             } catch (error) {
               Alert.alert('Error', 'No se pudo completar la operación de borrado.');
@@ -96,7 +96,7 @@ export default function TabTwoScreen() {
 
     setGenerating(true);
     try {
-      const response = await fetch('http://74.220.31.85/generate-recipes', {
+      const response = await fetch('http://74.220.28.80/generate-recipes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plant_ids: selectedPlants }),

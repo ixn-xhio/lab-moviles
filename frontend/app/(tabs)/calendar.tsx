@@ -86,7 +86,7 @@ export default function CalendarScreen() {
         console.log("Token obtenido:", tokenData.data);
 
         // Enviar el token obtenido al backend
-        await fetch('http://74.220.31.85/register-token', {
+        await fetch('http://74.220.28.80/register-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: tokenData.data })
@@ -100,7 +100,7 @@ export default function CalendarScreen() {
   const loadInitialData = async () => {
     setLoading(true);
     try {
-      const plantsRes = await fetch('http://74.220.31.85/plants');
+      const plantsRes = await fetch('http://74.220.28.80/plants');
       const plantsData = await plantsRes.json();
       
       const finalPlants = plantsData.length > 0 ? plantsData : FALLBACK_PLANTS;

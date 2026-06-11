@@ -1,7 +1,7 @@
 import { ChatUser, ChatMessage } from '@/interfaces/chat.types';
 
-export const BASE_HTTP_URL = 'https://chat-backend-4nzg.onrender.com';
-export const BASE_WS_URL = 'https://chat-backend-4nzg.onrender.com';
+export const BASE_HTTP_URL = 'http://74.220.28.80';
+export const BASE_WS_URL = 'http://74.220.28.80';
 
 export class ChatApiService {
   static async join(nickname: string): Promise<{ user: ChatUser; token: string }> {

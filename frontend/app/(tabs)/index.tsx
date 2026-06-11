@@ -57,7 +57,7 @@ export default function CameraScreen() {
         base64 = base64.slice(0, 200000);
       }
 
-      const response = await fetch('http://74.220.31.85/identify-plant', {
+      const response = await fetch('http://74.220.28.80/identify-plant', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -91,7 +91,7 @@ export default function CameraScreen() {
     setIsSaving(true);
 
     try {
-      const response = await fetch('http://74.220.31.85/save-plant', {
+      const response = await fetch('http://74.220.28.80/save-plant', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
